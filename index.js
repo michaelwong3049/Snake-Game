@@ -2,16 +2,18 @@ let score = document.getElementById('.score');
 let map = document.querySelector('.map');
 
 
-let foodX, foodY;
+let foodX = 0, foodY = 0;
 let directionX = 0, directionY = 0;
 let positionX = 12, positionY = 12;
 let snakeBody = [];
 let gameOver = false;
 
-const updateFoodPostion = () => {
+const updateFoodPosition = () => {
     foodX = Math.floor(Math.random() * 40) + 1;
     foodY = Math.floor(Math.random() * 40) + 1;
-    
+}
+
+const drawFood = () => {
     const food = document.querySelector('.food');
     const foodDiv = document.createElement('div');
     food.classList.add('foodDiv');
@@ -23,7 +25,7 @@ const move = () => {
     document.addEventListener('keydown', e =>{
         if(e.key === 'w'){
             directionX = 0;
-            directionY = -1;
+            directionY = -1; 
         }else if(e.key === 'a'){
             directionX = -1;
             directionY = 0;
@@ -49,7 +51,7 @@ const init = () =>{
     snakeBody.push([foodX,foodY]);
     }
 
-    let html;
+    let html = "";
     positionX += directionX;
     positionY += directionY;
     snakeBody[0] = [positionX, positionY];
@@ -57,14 +59,12 @@ const init = () =>{
     for(let i = snakeBody.length - 1; i > 0; i--){
         snakeBody[i] = snakeBody[i-1];
     }
-
-    for(let i = 0; i < snakeBody.length; i++){
-        html = `<div class="snakeDiv" style="grid-area: ${positionY} / ${positionX}"></div>`;
-        map.innerHTML += html;
-    }
     
+   
+    map.innerHTML += html;
 }
 
-updateFoodPostion();
-setInterval(init, 50);
+updateFoodPosition();
+drawFood();
+setInterval(init, 100);
 
