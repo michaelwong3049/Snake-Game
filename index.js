@@ -14,15 +14,26 @@ const updateFoodPosition = () => {
 }
 
 const drawFood = () => {
-    const food = document.querySelector('.food');
     const foodDiv = document.createElement('div');
-    food.classList.add('foodDiv');
-    food.style.gridColumn = foodX;
-    food.style.gridRow = foodY;
-    map.appendChild(food);
+    foodDiv.classList.add('foodDiv');
+    foodDiv.style.gridColumn = foodX;
+    foodDiv.style.gridRow = foodY;
+    map.appendChild(foodDiv);
+}
+
+const drawSnake = () => {
+    for(let i = 0; i < snakeBody.length; i++){
+        snake = snakeBody[i];
+        snake = document.createElement("div");
+        snake.classList.add("snake");
+        snake.style.gridColumn = snakeBody[i][0];
+        snake.style.gridRow = snakeBody[i][1];
+        map.appendChild(snake);
+    }
 }
 
 const move = () => {
+    const head = {...snakeBody[0]};
     document.addEventListener('keydown', e =>{
         if(e.key === 'w'){
             directionX = 0;
@@ -48,7 +59,10 @@ const handleGamerOver = () =>{
 const init = () =>{
     move();
     //Checks if snake head's position the wall
-
+    if(positionX > 40 || positionX < 0 || positionY > 40 || positionY < 0){
+        clearInterval();
+        location.reload();
+    }
     //Checks if snake head's position is equal to food position
     if(positionX == foodX && positionY == foodY){
         updateFoodPosition();
@@ -70,17 +84,12 @@ const init = () =>{
     }
     snakeBody[0] = ([positionX, positionY]);
 
-    //Instantiates a new snake portion for every snake segment;
-    for(let i = 0; i < snakeBody.length; i++){
-        snake = document.createElement("div");
-        snake.classList.add("snake");
-        snake.style.gridColumn = snakeBody[i][0];
-        snake.style.gridRow = snakeBody[i][1];
-    }
-    map.appendChild(snake);
+    map.innerHTML = "";
+    drawSnake();
+    drawFood();
 }
 
 updateFoodPosition();
 drawFood();
 console.log(foodX + " " + foodY)
-setInterval(init, 150);;
+setInterval(init, 50);;
