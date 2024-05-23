@@ -107,4 +107,4 @@ const init = () =>{
 updateFoodPosition();
 drawFood();
 console.log(foodX + " " + foodY)
-setInterval(init, 150);;
+setInterval(init, 300);;
