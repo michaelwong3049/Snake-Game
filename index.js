@@ -54,29 +54,44 @@ const move = () => {
 const handleGamerOver = () =>{
     clearInterval(); // setintervalid
     alert("game over");
+    location.reload();
 }
 
 const init = () =>{
     move();
+
     //Checks if snake head's position the wall
-    if(positionX > 40 || positionX < 0 || positionY > 40 || positionY < 0){
-        clearInterval();
-        location.reload();
+    if(positionX > 50 || positionX < 0 || positionY > 40 || positionY < 0){
+        handleGamerOver();
     }
+
     //Checks if snake head's position is equal to food position
     if(positionX == foodX && positionY == foodY){
         updateFoodPosition();
         drawFood();
-        snakeBody.push([foodX,foodY]);
-        console.log(snakeBody.length + " length");
-        console.log(foodX + " " + foodY)
-        console.log("eaten food");
+        if(directionX != 0){
+            snakeBody.push([snakeBody[snakeBody.length - 1][0],positionY]);  
+        }
+        else{
+            snakeBody.push([positionX,snakeBody[snakeBody.length - 1][1]]); 
+        }
     }
 
+
+    //Checks if the snake's head position is equal to the body
+    if(snakeBody.length > 1){
+        for(let i = 0; i < snakeBody.length; i++){
+            if((positionX == foodX && positionY == foodY)){
+                if(positionX == snakeBody[i][0] && positionY == snakeBody[i][1]){
+                    handleGamerOver();
+                }
+            }
+        }
+    }
+        
     //Change the snake head's position
     positionX += directionX;
     positionY += directionY;
-
 
     //Makes the snake segments follow the head of the snake
     for(let i = snakeBody.length - 1; i > 0; i--){
@@ -92,4 +107,4 @@ const init = () =>{
 updateFoodPosition();
 drawFood();
 console.log(foodX + " " + foodY)
-setInterval(init, 50);;
+setInterval(init, 150);;
