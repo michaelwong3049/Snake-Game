@@ -1,15 +1,15 @@
-let score = document.getElementById('.score');
+let scoreElement = document.getElementById('score');
 let map = document.querySelector('.map');
 
 let foodX = 0, foodY = 0;
 let directionX = 0, directionY = 0;
 let positionX = 12, positionY = 12;
-let snakeBody = [];
+let snakeBody = [[12, 12]];
 let runningScore = 0;
-let gameOver = false;
+let gameInterval;
 
 const updateFoodPosition = () => {
-    foodX = Math.floor(Math.random() * 40) + 1;
+    foodX = Math.floor(Math.random() * 50) + 1;
     foodY = Math.floor(Math.random() * 40) + 1;
 }
 
@@ -22,82 +22,69 @@ const drawFood = () => {
 }
 
 const drawSnake = () => {
-    for(let i = 0; i < snakeBody.length; i++){
-        snake = snakeBody[i];
-        snake = document.createElement("div");
-        snake.classList.add("snake");
-        snake.style.gridColumn = snakeBody[i][0];
-        snake.style.gridRow = snakeBody[i][1];
-        map.appendChild(snake);
-    }
+    snakeBody.forEach(segment => {
+        const snakeSegment = document.createElement("div");
+        snakeSegment.classList.add("snake");
+        snakeSegment.style.gridColumn = segment[0];
+        snakeSegment.style.gridRow = segment[1];
+        map.appendChild(snakeSegment);
+    });
 }
 
 const move = () => {
-    const head = {...snakeBody[0]};
-    document.addEventListener('keydown', e =>{
-        if(e.key === 'w'){
+    document.addEventListener('keydown', e => {
+        if(e.key === 'w' && directionY === 0){
             directionX = 0;
             directionY = -1;
-        }else if(e.key === 'a'){
+        } else if(e.key === 'a' && directionX === 0){
             directionX = -1;
             directionY = 0;
-        }else if(e.key === 's'){
+        } else if(e.key === 's' && directionY === 0){
             directionX = 0;
             directionY = 1;
-        }else if(e.key === 'd'){
+        } else if(e.key === 'd' && directionX === 0){
             directionX = 1;
             directionY = 0;
         }
-    })
+    });
 }
 
-const handleGamerOver = () =>{
-    clearInterval(); // setintervalid
-    alert("game over");
+const handleGameOver = () => {
+    clearInterval(gameInterval);
+    alert("Game over");
     location.reload();
 }
 
-const init = () =>{
+const init = () => {
     move();
 
-    //Checks if snake head's position the wall
-    if(positionX > 50 || positionX < 0 || positionY > 40 || positionY < 0){
-        handleGamerOver();
-    }
-
-    //Checks if snake head's position is equal to food position
-    if(positionX == foodX && positionY == foodY){
-        updateFoodPosition();
-        drawFood();
-        if(directionX != 0){
-            snakeBody.push([snakeBody[snakeBody.length - 1][0],positionY]);  
-        }
-        else{
-            snakeBody.push([positionX,snakeBody[snakeBody.length - 1][1]]); 
-        }
-    }
-
-
-    //Checks if the snake's head position is equal to the body
-    if(snakeBody.length > 1){
-        for(let i = 0; i < snakeBody.length; i++){
-            if((positionX == foodX && positionY == foodY)){
-                if(positionX == snakeBody[i][0] && positionY == snakeBody[i][1]){
-                    handleGamerOver();
-                }
-            }
-        }
-    }
-        
-    //Change the snake head's position
+    // Update head position
     positionX += directionX;
     positionY += directionY;
 
-    //Makes the snake segments follow the head of the snake
-    for(let i = snakeBody.length - 1; i > 0; i--){
-        snakeBody[i] = snakeBody[i-1];
+    // Check if snake head's position is outside the wall
+    if (positionX > 50 || positionX < 1 || positionY > 40 || positionY < 1) {
+        handleGameOver();
     }
-    snakeBody[0] = ([positionX, positionY]);
+
+    // Check if snake head's position is equal to food position
+    if (positionX == foodX && positionY == foodY) {
+        updateFoodPosition();
+        runningScore++;
+        scoreElement.textContent = runningScore;
+        snakeBody.push([foodX, foodY]);
+    }
+
+    // Check if the snake's head position is equal to any body segment
+    for (let i = 1; i < snakeBody.length; i++) {
+        if (positionX == snakeBody[i][0] && positionY == snakeBody[i][1]) {
+            handleGameOver();
+        }
+    }
+
+    // Update the snake body
+    snakeBody.unshift([positionX, positionY]);  
+    snakeBody.pop();
 
     map.innerHTML = "";
     drawSnake();
@@ -106,5 +93,5 @@ const init = () =>{
 
 updateFoodPosition();
 drawFood();
-console.log(foodX + " " + foodY)
-setInterval(init, 300);;
+console.log(foodX + " " + foodY);
+gameInterval = setInterval(init, 100);
